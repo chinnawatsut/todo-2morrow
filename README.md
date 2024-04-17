@@ -15,7 +15,7 @@ K-Tax เป็น Application คำนวนภาษี ที่ให้ผ
   - มากกว่า 2,000,000 อัตราภาษี 35%
 - เงินบริจาคสามารถหย่อนได้สูงสุด 100,000 บาท
 - ค่าลดหย่อนส่วนตัวมีค่าเริ่มต้นที่ 60,000 บาท
-- k-receipt โครงการชอปลดภาษาี ซึ่งสามารถลดหย่อนได้สูงสุด 50,000 บาทเป็นค่าเริ่มต้น
+- k-receipt โครงการช้อปลดภาษี ซึ่งสามารถลดหย่อนได้สูงสุด 50,000 บาทเป็นค่าเริ่มต้น
 - แอดมิน สามารถกำหนดค่าลดหย่อนส่วนตัวได้โดยไม่เกิน 100,000 บาท
 - แอดมิน สามารถกำหนด k-receipt สูงสุดได้ แต่ไม่เกิน 100,000 บาท
 - ค่าลดหย่อนส่วนตัวต้องมีค่ามากกว่า 10,000 บาท
@@ -30,29 +30,37 @@ K-Tax เป็น Application คำนวนภาษี ที่ให้ผ
 - ใช้ `PostgreSQL`
 - API port _MUST_ get from `environment variable` name `PORT`
 - database url _MUST_ get from environment variable name `DATABASE_URL`
-- ใช้ `docker-compose` สำหรับต่อ Database
+  - ตัวอย่าง `DATABASE_URL=host={REPLACE_ME} port=5432 user={REPLACE_ME} password={REPLACE_ME} dbname={REPLACE_ME} sslmode=disable`
+- ใช้ `docker compose` สำหรับต่อ Database
 - API support `Graceful Shutdown`
+  - เช่น ถ้ามีการกด `Ctrl + C` จะ print `shutting down the server`
 - มี Dockerfile สำหรับ build image และเป็น `Multi-stage build`
-- ใช้ `HTTP Status Code` อย่างเหมาะสม
-- ใช้ `HTTP Method` อย่างเหมาะสม
-- ใช้ `gofmt`
-- ใช้ `go vet`
-- แยก Branch ของแต่ละ Story ออกจาก `main` และ Merge กลับไปยัง `main` Branch
+- ใช้ `HTTP Method` และ `HTTP Status Code` อย่างเหมาะสม
+- ใช้ `gofmt` และ `go vet`
+- แยก Branch ของแต่ละ Story ออกจาก `main` และ Merge กลับไปยัง `main` Branch เสมอ
   - เช่น story ที่ 1 จะใช้ branch ชื่อ `feature/story-1` หรือ `feature/store-1-create-tax-calculation`
 - admin กำหนด Basic authen ด้วย username: `adminTax`, password: `admin!`
-- **การ run program จะใช้คำสั่ง docker-compose up เพื่อเตรียม environment และ go run main.go เพื่อ start api**
-- **หากต้องมีการใช้คำสั่งอื่น ๆ เพื่อทำให้โปรแกรมทำงานได้ จะไม่นับคะแนนหรือถูกหักคะแนน**
+  - username และ password ต้องเป็น environment variable
+  - และ `env` ต้องเป็นชื่อ `ADMIN_USERNAME` และ `ADMIN_PASSWORD`
+- **การ run program จะใช้คำสั่ง docker compose up เพื่อเตรียม environment และ go run main.go เพื่อ start api**
+  - **หากต้องมีการใช้คำสั่งอื่น ๆ เพื่อทำให้โปรแกรมทำงานได้ จะไม่นับคะแนนหรือถูกหักคะแนน**
+  - การตรวจจะทำการ export `env` ไว้ล่วงหน้าก่อนรัน ดังนี้
+	- `export PORT=8080`
+	- `export DATABASE_URL={REPLACE_ME}`
+	- `export ADMIN_USERNAME=adminTax`
+	- `export ADMIN_PASSWORD=admin!`
 - port ของ api จะต้องเป็น 8080
 
 ## Assumption
 
 - รองรับแค่ปีเดียวคือ 2567
+- ไม่มีเก็บข้อมูลภาษีของผู้ใช้งาน
 
 ## Stories Note
 
 - ผู้ใช้คำนวนภาษีตาม เงินได้ และฐานภาษี
 - ผู้ใช้คำนวนภาษี โดยสามารถใช้ค่าลดหย่อนจากการบริจาคได้
-- ผู้ใช้คำนวนภาษี โดยสามารถใช้ค่า wht เพื่อคำนวนเงินที่สามารถขอคืนได้ 
+- ผู้ใช้คำนวนภาษี โดยสามารถใช้ค่า wht เพื่อคำนวนเงินที่สามารถขอคืนได้
   - (wht: with holding tax หมายถึงเงินจำนวนนึงที่ต้องหักไว้ ณ ที่จ่ายเช่น รายรับ 1 ครั้งมี wht 5% แปลว่าได้รับเงิน 10,000 บาทจะต้องถูกหัก 500 บาท แล้วเงินส่วนนี้จะถูกส่งเข้าระบบ เสมือนได้ชำระภาษีล่วงหน้าแล้ว ถ้ารายได้ไม่ถึงเกณฑ์ที่ต้องเสียเพิ่มเติม สามารถขอคืนได้)
 - แอดมินสามารถตั้งค่า ค่าลดหย่อนได้
 - แสดงข้อมูลเพิ่มเติมตามขั้นบันใดภาษีได้
@@ -64,7 +72,7 @@ K-Tax เป็น Application คำนวนภาษี ที่ให้ผ
 
 ```
 * As user, I want to calculate my tax
-ในฐานะผู้ใช้ ฉันต้องการคำนวนภาษีจาก ข้อมูลที่ส่งให้
+ในฐานะผู้ใช้ ฉันต้องการคำนวนภาษีจากข้อมูลที่ส่งให้
 ```
 
 `POST:` tax/calculations
@@ -147,7 +155,7 @@ Response body
 
 ```
 * As user, I want to calculate my tax
-ในฐานะผู้ใช้ ฉันต้องการคำนวนภาษีจาก ข้อมูลที่ส่งให้
+ในฐานะผู้ใช้ ฉันต้องการคำนวนภาษีจากข้อมูลที่ส่งให้และข้อมูลค่าลดหย่อน
 ```
 
 `POST:` tax/calculations
@@ -272,7 +280,7 @@ Response body
 
 ```
 * As user, I want to calculate my tax with csv
-ในฐานะผู้ใช้ ฉันต้องการคำนวนภาษีด้วยข้อมูลที่ upload เป็น csv
+ในฐานะผู้ใช้ ฉันต้องการคำนวนภาษีด้วยข้อมูลที่ upload เป็น csv และมี validation เช่น ใส่ empty ไม่ได้ หรือ ใส่ข้อมูลผิด format ไม่ได้
 ```
 
 `POST:` tax/calculations/upload-csv
@@ -378,7 +386,7 @@ Response body
 
 ```
 * As admin, I want to setting k-receipt deduction
-ในฐานะ Admin ฉันต้องการตั้งค่า k-receipt สูงสุด
+ในฐานะ Admin ฉันต้องการตั้งค่า k-receipt สำหรับลดหย่อน
 ```
 
 `POST:` /admin/deductions/k-receipt
